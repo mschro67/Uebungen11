@@ -3,6 +3,7 @@
 package h2;
 
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class H2_main{
     public static int[] cache = new int[1000];
@@ -10,9 +11,14 @@ public class H2_main{
 
     public static void main(String[] args){
         clear();
-        for (int x=0;x<=20;x++){
-            System.out.println("Estimated time: "+benchmark(x)+"\n");
-        }
+	
+	Scanner s=new Scanner(System.in);
+	System.out.print("Number: ");
+	int number = Integer.parseInt(s.nextLine());
+	s.close();
+	System.out.print("\n");
+
+	System.out.println("\ntime (recursive): "+benchmark(number)+"ms\ntime (iterative): "+benchmark_iterative(number)+"ms");
     }
 
     public static void clear(){
@@ -24,7 +30,7 @@ public class H2_main{
         count=0;
     }
 
-    public static int fibonacci(int n) {
+    public static int fibonacci_iterative(int n) {
         if (n==0) return 0;
         else if (n==1) return 1;
 
@@ -40,7 +46,14 @@ public class H2_main{
         return b;
     }
 
-    public static int fibonacciCached(int n){
+    public static int fibonacci(int n) {
+        if (n==0) return 0;
+	else if (n==1) return 1;
+
+	return fibonacci(n-1)+fibonacci(n-2);
+    }
+
+    public static int fibonacciCached_iterative(int n) {
         int a = cache[0];
         int b = cache[1];
         int c;
@@ -61,11 +74,36 @@ public class H2_main{
         return b;
     }
 
+    public static int fibonacciCached(int n){
+        if (n==0) return 0;
+	else if (n==1) return 1;
+	
+	if (cache[n]!=Integer.MIN_VALUE){
+	    return cache[n];
+	}
+
+	int result=fibonacciCached(n-1)+fibonacciCached(n-2);
+	
+	if (cache[n]==Integer.MIN_VALUE){
+	    cache[n]=result;
+	}
+
+	return result;
+    }
+
     static long benchmark(int n){
         long before = System.nanoTime();
         int f=fibonacci(n);
         long after = System.nanoTime();
-        System.out.println("fibbonacci("+n+") = "+f);
+        System.out.println("recursive: "+f);
         return after-before;
+    }
+
+    static long benchmark_iterative(int n){
+        long before = System.nanoTime();
+	int f=fibonacci_iterative(n);
+	long after = System.nanoTime();
+	System.out.println("iterative: "+f);
+	return after-before;
     }
 }
